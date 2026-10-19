@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.goldencrust.app.ui.theme.GoldenCrustTheme
 import org.jetbrains.compose.resources.painterResource
 
 import goldencrustapp.shared.generated.resources.Res
@@ -22,7 +23,7 @@ import goldencrustapp.shared.generated.resources.compose_multiplatform
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
+    GoldenCrustTheme {
         var showContent by remember { mutableStateOf(false) }
         Column(
             modifier = Modifier
