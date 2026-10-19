@@ -17,8 +17,8 @@ import org.jetbrains.compose.resources.Font
 @Composable
 fun goldenCrustTypography(): Typography {
     val headline = FontFamily(
-        Font(Res.font.PlayfairDisplay_Bold, FontWeight.SemiBold),
-        Font(Res.font.PlayfairDisplay_SemiBold, FontWeight.Bold),
+        Font(Res.font.PlayfairDisplay_SemiBold, FontWeight.SemiBold),
+        Font(Res.font.PlayfairDisplay_Bold, FontWeight.Bold),
     )
     val body = FontFamily(
         Font(Res.font.Manrope_Regular, FontWeight.Normal),
