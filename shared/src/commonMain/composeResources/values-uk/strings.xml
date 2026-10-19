@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Golden Crust</string>
+    <string name="onboarding_title_1">Свіже меню щодня</string>
+    <string name="onboarding_desc_1">Піци, салати, десерти та напої просто з печі з доставкою до ваших дверей у Чернівцях.</string>
+    <string name="onboarding_title_2">Збери кошик за хвилину</string>
+    <string name="onboarding_desc_2">Додавайте улюблені страви, обирайте кількість і оформлюйте замовлення за кілька дотиків.</string>
+    <string name="onboarding_title_3">Стеж за замовленням</string>
+    <string name="onboarding_desc_3">Стежте за статусом у реальному часі: прийнято, готується, у дорозі, доставлено.</string>
+    <string name="onboarding_title_4">Залишай відгуки</string>
+    <string name="onboarding_desc_4">Оцінюйте страви й допомагайте іншим обрати найкраще.</string>
+    <string name="onboarding_skip">Пропустити</string>
+    <string name="onboarding_next">Далі</string>
+    <string name="onboarding_start">Почати</string>
+</resources>
