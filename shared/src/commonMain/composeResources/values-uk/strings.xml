@@ -12,4 +12,20 @@
     <string name="onboarding_skip">Пропустити</string>
     <string name="onboarding_next">Далі</string>
     <string name="onboarding_start">Почати</string>
+    <string name="login_title">З поверненням</string>
+    <string name="login_subtitle">Увійдіть, щоб замовити свіжу піцу з доставкою у Чернівцях.</string>
+    <string name="login_username_label">Логін</string>
+    <string name="login_username_hint">Ваш логін</string>
+    <string name="login_password_label">Пароль</string>
+    <string name="login_password_hint">Ваш пароль</string>
+    <string name="login_forgot">Забули пароль?</string>
+    <string name="login_sign_in">Увійти</string>
+    <string name="login_no_account">Ще немає акаунту?</string>
+    <string name="login_register">Зареєструватися</string>
+    <string name="login_show_password">Показати пароль</string>
+    <string name="login_hide_password">Сховати пароль</string>
+    <string name="error_username_empty">Введіть логін</string>
+    <string name="error_username_short">Логін має містити щонайменше 3 символи</string>
+    <string name="error_password_empty">Введіть пароль</string>
+    <string name="error_password_short">Пароль має містити щонайменше 6 символів</string>
 </resources>

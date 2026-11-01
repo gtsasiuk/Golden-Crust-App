@@ -20,6 +20,7 @@ fun AppTopBar(
     onToggleTheme: () -> Unit,
     onToggleLanguage: () -> Unit,
     modifier: Modifier = Modifier,
+    showLogo: Boolean = true,
 ) {
     val border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
 
@@ -34,7 +35,7 @@ fun AppTopBar(
             Text(if (isUk) "UA" else "EN", style = MaterialTheme.typography.labelLarge)
         }
 
-        GoldenCrustLogo(markHeight = 32.dp)
+        if (showLogo) GoldenCrustLogo(markHeight = 32.dp)
 
         OutlinedIconButton(
             onClick = onToggleTheme,
