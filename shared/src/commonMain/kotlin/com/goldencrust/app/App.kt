@@ -1,32 +1,40 @@
 package com.goldencrust.app
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.rememberNavBackStack
 import co.touchlab.kermit.Logger
 import com.goldencrust.app.config.AppPreferences
 import com.goldencrust.app.config.LocalAppLocale
-import com.goldencrust.app.presentation.onboarding.OnboardingScreen
+import com.goldencrust.app.di.appModule
+import com.goldencrust.app.di.initKoin
+import com.goldencrust.app.presentation.main.MainViewModel
+import com.goldencrust.app.presentation.navigation.AppNavigation
+import com.goldencrust.app.presentation.navigation.navSavedStateConfig
 import com.goldencrust.app.presentation.ui.theme.GoldenCrustTheme
-import goldencrustapp.shared.generated.resources.Res
-import goldencrustapp.shared.generated.resources.golden_crust_logo
-import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.KoinApplication
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.mp.KoinPlatform
 
 private val log = Logger.withTag("App")
 
 @Composable
 fun App() {
+    remember { KoinPlatform.getKoinOrNull() ?: initKoin().koin }
+
+
+    AppContent()
+}
+
+@Composable
+private fun AppContent() {
     val prefs = remember { AppPreferences() }
-    var onboardingDone by remember { mutableStateOf(prefs.onboardingCompleted) }
+    val mainViewModel = koinViewModel<MainViewModel>()
+
+    val backStack = rememberNavBackStack(navSavedStateConfig, mainViewModel.startRoute)
+
     var darkOverride by remember { mutableStateOf(prefs.darkTheme) }
     var language by remember { mutableStateOf(prefs.language) }
-    var onboardingPage by remember { mutableIntStateOf(0) }
-
     val isDark = darkOverride ?: isSystemInDarkTheme()
 
     CompositionLocalProvider(LocalAppLocale provides language) {
@@ -34,34 +42,22 @@ fun App() {
             val isUk = LocalAppLocale.current.startsWith("uk")
 
             GoldenCrustTheme(darkTheme = isDark) {
-                if (!onboardingDone) {
-                    OnboardingScreen(
-                        initialPage = onboardingPage,
-                        onPageChange = { onboardingPage = it },
-                        isDark = isDark,
-                        isUk = isUk,
-                        onToggleTheme = {
-                            darkOverride = !isDark
-                            prefs.darkTheme = !isDark
-                            log.i { "Theme dark=${!isDark}" }
-                        },
-                        onToggleLanguage = {
-                            val new = if (isUk) "en" else "uk"
-                            language = new
-                            prefs.language = new
-                            log.i { "Language=$new" }
-                        },
-                        onFinish = {
-                            log.i { "Onboarding finished" }
-                            prefs.onboardingCompleted = true
-                            onboardingDone = true
-                        },
-                    )
-                } else {
-                    Surface(Modifier.fillMaxSize()) {
-                        Image(painterResource(Res.drawable.golden_crust_logo), contentDescription = null, modifier = Modifier.height(120.dp))
-                    }
-                }
+                AppNavigation(
+                    backStack = backStack,
+                    isDark = isDark,
+                    isUk = isUk,
+                    onToggleTheme = {
+                        darkOverride = !isDark
+                        prefs.darkTheme = !isDark
+                        log.i { "Theme dark=${!isDark}" }
+                    },
+                    onToggleLanguage = {
+                        val new = if (isUk) "en" else "uk"
+                        language = new
+                        prefs.language = new
+                        log.i { "Language=$new" }
+                    },
+                )
             }
         }
     }

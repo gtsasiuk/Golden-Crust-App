@@ -107,6 +107,7 @@ private fun OnboardingContent(
                     onToggleTheme = onToggleTheme,
                     onToggleLanguage = onToggleLanguage,
                 )
+                Spacer(Modifier.height(24.dp))
 
                 HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { index ->
                     PageContent(pages[index])

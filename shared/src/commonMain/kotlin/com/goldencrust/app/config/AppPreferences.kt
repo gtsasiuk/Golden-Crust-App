@@ -3,10 +3,6 @@ package com.goldencrust.app.config
 import com.russhwolf.settings.Settings
 
 class AppPreferences(private val settings: Settings = Settings()) {
-    var onboardingCompleted: Boolean
-        get() = settings.getBoolean(KEY_ONBOARDING, false)
-        set(value) = settings.putBoolean(KEY_ONBOARDING, value)
-
     var darkTheme: Boolean?
         get() = settings.getBooleanOrNull(KEY_DARK)
         set(value) {
@@ -20,7 +16,6 @@ class AppPreferences(private val settings: Settings = Settings()) {
         }
 
     private companion object {
-        const val KEY_ONBOARDING = "onboarding_completed"
         const val KEY_DARK = "dark_theme"
         const val KEY_LANG = "language"
     }
