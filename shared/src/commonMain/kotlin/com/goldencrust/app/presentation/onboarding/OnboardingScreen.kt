@@ -1,4 +1,4 @@
-package com.goldencrust.app.ui.onboarding
+package com.goldencrust.app.presentation.onboarding
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -9,7 +9,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,7 +17,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
+import com.goldencrust.app.presentation.ui.AppTopBar
+import com.goldencrust.app.presentation.ui.GoldenCrustLogo
+import com.goldencrust.app.presentation.ui.ObserveEvents
 import goldencrustapp.shared.generated.resources.Res
 import goldencrustapp.shared.generated.resources.*
 import kotlinx.coroutines.launch
@@ -26,6 +29,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.viewmodel.koinViewModel
 
 private val log = Logger.withTag("Onboarding")
 
@@ -42,18 +46,45 @@ private val pages = listOf(
     OnboardingPage(Res.drawable.onboarding_4, Res.string.onboarding_title_4, Res.string.onboarding_desc_4),
 )
 
+
 @Composable
 fun OnboardingScreen(
-    initialPage: Int,
-    onPageChange: (Int) -> Unit,
     isDark: Boolean,
     isUk: Boolean,
     onToggleTheme: () -> Unit,
     onToggleLanguage: () -> Unit,
-    onFinish: () -> Unit,
+    onNavigateToLogin: () -> Unit,
+    viewModel: OnboardingViewModel = koinViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    ObserveEvents(viewModel.events) { event ->
+        when (event) {
+            OnboardingEvent.NavigateToLogin -> onNavigateToLogin()
+        }
+    }
+
+    OnboardingContent(
+        state = state,
+        onAction = viewModel::onAction,
+        isDark = isDark,
+        isUk = isUk,
+        onToggleTheme = onToggleTheme,
+        onToggleLanguage = onToggleLanguage,
+    )
+}
+
+@Composable
+private fun OnboardingContent(
+    state: OnboardingState,
+    onAction: (OnboardingAction) -> Unit,
+    isDark: Boolean,
+    isUk: Boolean,
+    onToggleTheme: () -> Unit,
+    onToggleLanguage: () -> Unit,
 ) {
     val pagerState = rememberPagerState(
-        initialPage = initialPage,
+        initialPage = state.currentPage,
         pageCount = { pages.size },
     )
     val scope = rememberCoroutineScope()
@@ -61,7 +92,7 @@ fun OnboardingScreen(
 
     LaunchedEffect(pagerState.currentPage) {
         log.d { "Page changed to ${pagerState.currentPage}" }
-        onPageChange(pagerState.currentPage)
+        onAction(OnboardingAction.PageChanged(pagerState.currentPage))
     }
 
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
@@ -70,7 +101,7 @@ fun OnboardingScreen(
                 modifier = Modifier.widthIn(max = 480.dp).fillMaxSize().padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                TopBar(
+                AppTopBar(
                     isDark = isDark,
                     isUk = isUk,
                     onToggleTheme = onToggleTheme,
@@ -85,7 +116,10 @@ fun OnboardingScreen(
                 Spacer(Modifier.height(24.dp))
 
                 if (isLast) {
-                    Button(onClick = onFinish, modifier = Modifier.fillMaxWidth().height(52.dp)) {
+                    Button(
+                        onClick = { onAction(OnboardingAction.Finish) },
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
+                    ) {
                         Text(stringResource(Res.string.onboarding_start), style = MaterialTheme.typography.labelLarge)
                     }
                 } else {
@@ -94,7 +128,7 @@ fun OnboardingScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        TextButton(onClick = onFinish) {
+                        TextButton(onClick = { onAction(OnboardingAction.Skip) }) {
                             Text(stringResource(Res.string.onboarding_skip))
                         }
                         Button(onClick = {
@@ -149,28 +183,6 @@ private fun PageIndicator(state: PagerState) {
                 else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
             )
             Box(Modifier.height(8.dp).width(width).clip(CircleShape).background(color))
-        }
-    }
-}
-
-@Composable
-private fun TopBar(
-    isDark: Boolean,
-    isUk: Boolean,
-    onToggleTheme: () -> Unit,
-    onToggleLanguage: () -> Unit,
-) {
-    Box(Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
-        TextButton(onClick = onToggleLanguage, modifier = Modifier.align(Alignment.CenterStart)) {
-            Text(if (isUk) "UA" else "EN", style = MaterialTheme.typography.labelLarge)
-        }
-        Image(
-            painter = painterResource(Res.drawable.logo),
-            contentDescription = "Golden Crust",
-            modifier = Modifier.height(36.dp),
-        )
-        TextButton(onClick = onToggleTheme, modifier = Modifier.align(Alignment.CenterEnd)) {
-            Text(if (isDark) "☀" else "🌙")
         }
     }
 }

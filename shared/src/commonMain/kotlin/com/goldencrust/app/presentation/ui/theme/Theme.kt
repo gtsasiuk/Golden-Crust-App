@@ -1,4 +1,4 @@
-package com.goldencrust.app.ui.theme
+package com.goldencrust.app.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

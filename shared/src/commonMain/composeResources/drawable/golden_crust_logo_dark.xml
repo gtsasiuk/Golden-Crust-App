@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Golden Crust: знак (скибка піци). SVG viewBox "10 10 560 490" -> translate(-10,-10). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="560dp"
+    android:height="490dp"
+    android:viewportWidth="560"
+    android:viewportHeight="490">
+    <group
+        android:translateX="-10"
+        android:translateY="-10">
+        <path
+            android:fillColor="#FFFFF3E0"
+            android:strokeColor="#FFFFF3E0"
+            android:strokeWidth="6"
+            android:strokeLineJoin="round"
+            android:pathData="M28,238 A267,267 0 0 1 550,238 L290,480 Z"/>
+        <path
+            android:fillColor="#FFE8CFA0"
+            android:pathData="M52,238 A245,245 0 0 1 528,238 L290,452 Z"/>
+        <group>
+            <clip-path android:pathData="M52,238 A245,245 0 0 1 528,238 L290,452 Z"/>
+            <path android:pathData="M290,80 a225,225 0 1,0 0,450 a225,225 0 1,0 0,-450 Z">
+                <aapt:attr name="android:fillColor">
+                    <gradient
+                        android:type="linear"
+                        android:startX="65"
+                        android:startY="80"
+                        android:endX="515"
+                        android:endY="530">
+                        <item android:offset="0" android:color="#FFE3A737"/>
+                        <item android:offset="1" android:color="#FFCF8E20"/>
+                    </gradient>
+                </aapt:attr>
+            </path>
+        </group>
+        <path
+            android:fillColor="#FFDB4630"
+            android:pathData="M256,215 a34,34 0 1,0 68,0 a34,34 0 1,0 -68,0 Z"/>
+        <path
+            android:fillColor="#FFDB4630"
+            android:pathData="M340,282 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0 Z"/>
+        <path
+            android:fillColor="#FF4B7F36"
+            android:pathData="M180,292 a29,29 0 1,0 58,0 a29,29 0 1,0 -58,0 Z"/>
+        <path
+            android:fillColor="#FFE8A93A"
+            android:pathData="M270,370 a20,20 0 1,0 40,0 a20,20 0 1,0 -40,0 Z"/>
+    </group>
+</vector>

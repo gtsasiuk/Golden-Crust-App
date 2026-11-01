@@ -1,18 +1,21 @@
 package com.goldencrust.app
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
 import com.goldencrust.app.config.AppPreferences
 import com.goldencrust.app.config.LocalAppLocale
-import com.goldencrust.app.ui.onboarding.OnboardingScreen
-import com.goldencrust.app.ui.theme.GoldenCrustTheme
+import com.goldencrust.app.presentation.onboarding.OnboardingScreen
+import com.goldencrust.app.presentation.ui.theme.GoldenCrustTheme
+import goldencrustapp.shared.generated.resources.Res
+import goldencrustapp.shared.generated.resources.golden_crust_logo
+import org.jetbrains.compose.resources.painterResource
 
 private val log = Logger.withTag("App")
 
@@ -56,7 +59,7 @@ fun App() {
                     )
                 } else {
                     Surface(Modifier.fillMaxSize()) {
-                        Box(contentAlignment = Alignment.Center) { Text("Golden Crust") }
+                        Image(painterResource(Res.drawable.golden_crust_logo), contentDescription = null, modifier = Modifier.height(120.dp))
                     }
                 }
             }

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Golden Crust</string>
+    <string name="logo_tagline">PIZZERIA • CHERNIVTSI</string>
     <string name="onboarding_title_1">Fresh menu every day</string>
     <string name="onboarding_desc_1">Pizzas, salads, desserts and drinks from our oven, delivered to your door in Chernivtsi.</string>
     <string name="onboarding_title_2">Build your cart in a minute</string>

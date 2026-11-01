@@ -1,4 +1,4 @@
-package com.goldencrust.app.data.repository
+package com.goldencrust.app.data.onboarding
 
 import com.goldencrust.app.domain.onboarding.OnboardingRepository
 import com.russhwolf.settings.Settings
