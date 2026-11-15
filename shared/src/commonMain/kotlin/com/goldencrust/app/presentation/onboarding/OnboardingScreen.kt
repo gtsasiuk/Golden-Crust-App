@@ -1,7 +1,11 @@
 package com.goldencrust.app.presentation.onboarding
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import co.touchlab.kermit.Logger
 import com.goldencrust.app.presentation.ui.AppTopBar
-import com.goldencrust.app.presentation.ui.GoldenCrustLogo
+import com.goldencrust.app.presentation.ui.CenteredScrollColumn
 import com.goldencrust.app.presentation.ui.ObserveEvents
+import com.goldencrust.app.presentation.ui.WindowLayout
+import com.goldencrust.app.presentation.ui.rememberWindowLayout
 import goldencrustapp.shared.generated.resources.Res
 import goldencrustapp.shared.generated.resources.*
 import kotlinx.coroutines.launch
@@ -45,7 +51,6 @@ private val pages = listOf(
     OnboardingPage(Res.drawable.onboarding_3, Res.string.onboarding_title_3, Res.string.onboarding_desc_3),
     OnboardingPage(Res.drawable.onboarding_4, Res.string.onboarding_title_4, Res.string.onboarding_desc_4),
 )
-
 
 @Composable
 fun OnboardingScreen(
@@ -89,56 +94,142 @@ private fun OnboardingContent(
     )
     val scope = rememberCoroutineScope()
     val isLast = pagerState.currentPage == pages.lastIndex
+    val isWide = rememberWindowLayout() == WindowLayout.Wide
 
     LaunchedEffect(pagerState.currentPage) {
         log.d { "Page changed to ${pagerState.currentPage}" }
         onAction(OnboardingAction.PageChanged(pagerState.currentPage))
     }
 
+    val onNext: () -> Unit = {
+        scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+    }
+
     Surface(color = MaterialTheme.colorScheme.background, modifier = Modifier.fillMaxSize()) {
-        Box(Modifier.safeDrawingPadding(), contentAlignment = Alignment.TopCenter) {
-            Column(
-                modifier = Modifier.widthIn(max = 480.dp).fillMaxSize().padding(24.dp),
+        if (isWide) {
+            OnboardingWide(pagerState, isLast, isDark, isUk, onToggleTheme, onToggleLanguage, onAction, onNext)
+        } else {
+            OnboardingCompact(pagerState, isLast, isDark, isUk, onToggleTheme, onToggleLanguage, onAction, onNext)
+        }
+    }
+}
+
+@Composable
+private fun OnboardingCompact(
+    pagerState: PagerState,
+    isLast: Boolean,
+    isDark: Boolean,
+    isUk: Boolean,
+    onToggleTheme: () -> Unit,
+    onToggleLanguage: () -> Unit,
+    onAction: (OnboardingAction) -> Unit,
+    onNext: () -> Unit,
+) {
+    Box(Modifier.safeDrawingPadding(), contentAlignment = Alignment.TopCenter) {
+        Column(
+            modifier = Modifier.widthIn(max = 480.dp).fillMaxSize().padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            AppTopBar(isDark, isUk, onToggleTheme, onToggleLanguage)
+            Spacer(Modifier.height(24.dp))
+
+            HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { index ->
+                PageContent(pages[index])
+            }
+
+            PageIndicator(pagerState)
+            Spacer(Modifier.height(24.dp))
+            OnboardingControls(isLast, onAction, onNext)
+        }
+    }
+}
+
+@Composable
+private fun OnboardingWide(
+    pagerState: PagerState,
+    isLast: Boolean,
+    isDark: Boolean,
+    isUk: Boolean,
+    onToggleTheme: () -> Unit,
+    onToggleLanguage: () -> Unit,
+    onAction: (OnboardingAction) -> Unit,
+    onNext: () -> Unit,
+) {
+    Row(Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+        ) { index ->
+            Image(
+                painter = painterResource(pages[index].image),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+
+        Column(Modifier.weight(1f).fillMaxHeight().safeDrawingPadding().padding(24.dp)) {
+            AppTopBar(isDark, isUk, onToggleTheme, onToggleLanguage)
+
+            CenteredScrollColumn(
+                spacing = 32.dp,
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                AppTopBar(
-                    isDark = isDark,
-                    isUk = isUk,
-                    onToggleTheme = onToggleTheme,
-                    onToggleLanguage = onToggleLanguage,
-                )
-                Spacer(Modifier.height(24.dp))
-
-                HorizontalPager(state = pagerState, modifier = Modifier.weight(1f)) { index ->
-                    PageContent(pages[index])
-                }
-
-                PageIndicator(pagerState)
-                Spacer(Modifier.height(24.dp))
-
-                if (isLast) {
-                    Button(
-                        onClick = { onAction(OnboardingAction.Finish) },
-                        modifier = Modifier.fillMaxWidth().height(52.dp),
-                    ) {
-                        Text(stringResource(Res.string.onboarding_start), style = MaterialTheme.typography.labelLarge)
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        TextButton(onClick = { onAction(OnboardingAction.Skip) }) {
-                            Text(stringResource(Res.string.onboarding_skip))
-                        }
-                        Button(onClick = {
-                            scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
-                        }) {
-                            Text(stringResource(Res.string.onboarding_next))
-                        }
+                AnimatedContent(
+                    targetState = pages[pagerState.currentPage],
+                    transitionSpec = { fadeIn() togetherWith fadeOut() },
+                    modifier = Modifier.widthIn(max = 460.dp).fillMaxWidth(),
+                ) { page ->
+                    Column {
+                        Text(
+                            text = stringResource(page.title),
+                            style = MaterialTheme.typography.headlineLarge,
+                            color = MaterialTheme.colorScheme.onBackground,
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Text(
+                            text = stringResource(page.description),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
+                Row(Modifier.widthIn(max = 460.dp).fillMaxWidth()) {
+                    PageIndicator(pagerState)
+                }
+                Box(Modifier.widthIn(max = 460.dp).fillMaxWidth()) {
+                    OnboardingControls(isLast, onAction, onNext)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun OnboardingControls(
+    isLast: Boolean,
+    onAction: (OnboardingAction) -> Unit,
+    onNext: () -> Unit,
+) {
+    if (isLast) {
+        Button(
+            onClick = { onAction(OnboardingAction.Finish) },
+            modifier = Modifier.fillMaxWidth().height(52.dp),
+        ) {
+            Text(stringResource(Res.string.onboarding_start), style = MaterialTheme.typography.labelLarge)
+        }
+    } else {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TextButton(onClick = { onAction(OnboardingAction.Skip) }) {
+                Text(stringResource(Res.string.onboarding_skip))
+            }
+            Button(onClick = onNext) {
+                Text(stringResource(Res.string.onboarding_next))
             }
         }
     }
